@@ -1,0 +1,10 @@
+#!/usr/bin/env tsh
+
+# This is a test tsh script.
+
+echo Hello World!
+
+alias ls='ls -tral'
+alias
+
+rm

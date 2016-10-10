@@ -1,0 +1,10 @@
+# ~/.tshrc
+#
+# Example run-config file.
+
+alias ls='ls --color'
+alias l='ls -l'
+
+alias cd..='cd ..'
+
+echo Welcome to tsh.
