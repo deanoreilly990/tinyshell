@@ -31,7 +31,7 @@ def readConfig():
     if os.access(CONFIG, os.R_OK):
         exec file(CONFIG) in globals()
     else:
-        print "tsh: Warning: Could not open `%s' for reading." % CONFIG
+        print "D-SHELL: Warning: Could not open `%s' for reading." % CONFIG
 
 
 def lineSplit(line):
@@ -81,21 +81,21 @@ class Shell:
                 for kv in self.alias.iteritems():
                     print "alias %s='%s'" % kv
         else:
-            print "tsh: Usage: alias [name='value']"
+            print "D-SHELL: Usage: alias [name='value']"
             
     def do_unalias(self, args):
         m = re.match(r"(\S+)?$", args)
         if m:
             del self.alias[m.group(1)]
         else:
-            print "tsh: Usage: unalias name"
+            print "D-SHELL: Usage: unalias name"
             
     def do_show_commands(self, args):
         if args=='':
             for kv in sorted(self.commands().items()):
                 print "    %-15s %s" % kv
         else:
-            print "tsh: Usage: commands"
+            print "D-SHELL: Usage: commands"
          
     def do_cd(self, args):
         """
@@ -110,12 +110,12 @@ class Shell:
         if m:
             path = m.group(1) if m.group(1) else '~'
             try: os.chdir(os.path.expanduser(path))
-            except: print "tsh: cd: `%s' No such directory" % path
+            except: print "D-SHELL: cd: `%s' No such directory" % path
         else:
-            print "tsh: Usage: cd [path]"
+            print "D_SHELL: Usage: cd [path]"
 
     def execute_file(self, filename):
-        if VERBOSE: print "tsh: executing file `%s':" % filename
+        if VERBOSE: print "D-SHELL: executing file `%s':" % filename
         for line in file(filename):
             self.execute(line)
             
@@ -128,12 +128,12 @@ class Shell:
         if self.alias.has_key(cmd):
             alias = self.alias[cmd]
             line = alias+' '+args
+            #put in here a call to process all of my commands i.e. pwd ifconfig pw and date and then return it your way. Lock down rest then
             if lineSplit(alias)[0] != cmd:
                 f = self.execute
         f(line)
-            
     def rawExec(self, line):
-        if VERBOSE: print "tsh: executing: %s   " % line,
+        if VERBOSE: print "D-SHELL: executing: %s   " % line,
         cmd, args = lineSplit(line)
         funcname = "do_" + cmd
         if hasattr(self, funcname):
@@ -142,7 +142,7 @@ class Shell:
             try:
                 func(args)
             except:
-                print "tsh: Error in line `%s'." % line
+                print "D-SHELL: Error in line `%s'." % line
         elif cmd in allowExec:
             if VERBOSE: print "(os.spawn)"
             os.spawnvp(os.P_WAIT, cmd, line.split())
@@ -151,7 +151,7 @@ class Shell:
             if allowSubShell:
                 os.system(line)
             else:
-                print "tsh: `%s' Permission denied." % line
+                print "D-SHELL: `%s' Permission denied." % line
 
     def commands(self):
         """
@@ -191,12 +191,12 @@ def repl():
             readline.read_history_file(historyFile)
             readline.set_history_length(100)
         else:
-            print "tsh: Could not open `%s' for writing." % historyFile
+            print "D-SHELL: Could not open `%s' for writing." % historyFile
             try:
                 file(historyFile, 'w').close()
                 print "`%s' created." % historyFile
             except IOError:
-                print "tsh: Warning: Creating `%s' failed." % historyFile
+                print "D-SHELL: Warning: Creating `%s' failed." % historyFile
                 historyFile = None
 
         readline.parse_and_bind("tab: complete")
@@ -219,7 +219,7 @@ def repl():
     while True:
         words = shell.completions()
         try:
-            line = raw_input(os.getcwd()+' tsh> ')
+            line = raw_input(' D-SHELL> ')
             if line.strip() == 'exit':
                 break
             if has_readline and historyFile:
@@ -236,7 +236,7 @@ def usage():
 
 
 def test():
-    print 'tsh: Performing tests ...'
+    print 'D-SHELL: Performing tests ...'
     import doctest
     doctest.testmod()
     sys.exit(0)
