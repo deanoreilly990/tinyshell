@@ -22,7 +22,7 @@ import sys, os, os.path, glob, re
 VERBOSE = False
 
 # Location of main configuration file:
-CONFIG = '/etc/tsh.conf'
+CONFIG = '/home/dor/Documents/tsh/tsh.conf'
 
 allowExec = []
 allowSubShell = False
@@ -212,7 +212,7 @@ def repl():
     
     shell = Shell()
 
-    rcFile = os.path.expanduser('~/.tshrc')
+    rcFile = os.path.expanduser('/home/dor/Documents/tsh/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
     

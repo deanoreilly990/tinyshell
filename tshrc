@@ -6,5 +6,9 @@ alias ls='ls --color'
 alias l='ls -l'
 
 alias cd..='cd ..'
+alias pw='pwd'
+alias ud='grep -i dor /etc/passwd'
+alias dt='date'
+alias ifc='ifconfig eth0'
 
 echo Welcome to D_SHELL .
