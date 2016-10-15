@@ -7,4 +7,4 @@ alias l='ls -l'
 
 alias cd..='cd ..'
 
-echo Welcome to tsh.
+echo Welcome to D_SHELL .
