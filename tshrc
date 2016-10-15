@@ -9,6 +9,6 @@ alias cd..='cd ..'
 alias pw='pwd'
 alias ud='grep -i dor /etc/passwd'
 alias dt='date'
-alias ifc='ifconfig eth0'
+alias ifc='ifconfig'
 
 echo Welcome to D_SHELL .

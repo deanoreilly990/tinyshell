@@ -22,7 +22,7 @@ import sys, os, os.path, glob, re
 VERBOSE = False
 
 # Location of main configuration file:
-CONFIG = '/home/dor/Documents/tsh/tsh.conf'
+CONFIG = '/etc/tsh/tsh.conf'
 
 allowExec = []
 allowSubShell = False
@@ -122,12 +122,18 @@ class Shell:
     def execute(self, line):
         line = line.strip()
         cmd, args = lineSplit(line)
+        #here I process the command to remove any args and then place a default in for incon -DOR
+        if (cmd == 'pw'):
+            args = ''
+        if (cmd == 'ifcon'and args==''):
+            args ='eth0'
         if not cmd:
             return
         f = self.rawExec
         if self.alias.has_key(cmd):
             alias = self.alias[cmd]
             line = alias+' '+args
+            print line
             #put in here a call to process all of my commands i.e. pwd ifconfig pw and date and then return it your way. Lock down rest then
             if lineSplit(alias)[0] != cmd:
                 f = self.execute
@@ -212,7 +218,7 @@ def repl():
     
     shell = Shell()
 
-    rcFile = os.path.expanduser('/home/dor/Documents/tsh/tshrc')
+    rcFile = os.path.expanduser('/etc/tsh/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
     
