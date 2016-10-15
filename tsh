@@ -22,7 +22,7 @@ import sys, os, os.path, glob, re
 VERBOSE = False
 
 # Location of main configuration file:
-CONFIG = '/etc/tsh/tsh.conf'
+CONFIG = '/bin/tinyshell/tsh.conf'
 
 allowExec = []
 allowSubShell = False
@@ -125,7 +125,7 @@ class Shell:
         #here I process the command to remove any args and then place a default in for incon -DOR
         if (cmd == 'pw'):
             args = ''
-        if (cmd == 'ifcon'and args==''):
+        if (cmd == 'ifc'and args==''):
             args ='eth0'
         if not cmd:
             return
@@ -218,7 +218,7 @@ def repl():
     
     shell = Shell()
 
-    rcFile = os.path.expanduser('/etc/tsh/tshrc')
+    rcFile = os.path.expanduser('/bin/tinyshell/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
     
