@@ -22,7 +22,7 @@ import sys, os, os.path, glob, re
 VERBOSE = False
 
 # Location of main configuration file:
-CONFIG = '/bin/tinyshell/tsh.conf'
+CONFIG = '/home/dor/Documents/tsh/tsh.conf'
 
 allowExec = []
 allowSubShell = False
@@ -127,6 +127,8 @@ class Shell:
             args = ''
         if (cmd == 'ifc'and args==''):
             args ='eth0'
+        if (cmd =='dt'):
+            args=' +%Y%m%d%H%M%S'
         if not cmd:
             return
         f = self.rawExec
@@ -207,7 +209,6 @@ def repl():
 
         readline.parse_and_bind("tab: complete")
 
-        words = {}
         def completer(prefix, index):
             try:
                 return [w for w in words if w.startswith(prefix)][index]
@@ -218,7 +219,7 @@ def repl():
     
     shell = Shell()
 
-    rcFile = os.path.expanduser('/bin/tinyshell/tshrc')
+    rcFile = os.path.expanduser('/home/dor/Documents/tsh/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
     
