@@ -1,21 +1,3 @@
-#!/usr/bin/env python
-"""Usage:  tsh [options] [file]
-
-Options:
-
-    -h  --help      print this text and exit.
-    
-    -t  --test      perform some tests and exit.
-    
-    -v  --verbose   be verbose (mostly for debugging).
-
-        --version   print version number and exit.
-"""
-__author__ = 'Ilan Schnell <ilanschnell@gmail.com>'
-__copyright__ = '(c) Ilan Schnell, 2007'
-__license__ = 'GNU GPL 2'
-__version__ = '0.02'
-
 import sys, os, os.path, glob, re
 
 # The variables can be changed by the command line options:
@@ -33,18 +15,7 @@ def readConfig():
     else:
         print "D-SHELL: Warning: Could not open `%s' for reading." % CONFIG
 
-
 def lineSplit(line):
-    """
-    Splits a line into its command and options.
-
-    >>> lineSplit(' ls  -l /usr ')
-    ('ls', '-l /usr')
-    >>> lineSplit(' ls  ')
-    ('ls', '')
-    >>> lineSplit('  # comment')
-    ('', '')
-    """
     line = line.strip()
     if not line or line[0]=='#':
         return '', ''
@@ -53,26 +24,18 @@ def lineSplit(line):
         return tmp[0], '' if len(tmp)==1 else tmp[1].strip()
 
 
+def lock_down(cmd):
+    allowed_arr = ['pw', 'dt', 'ud', 'ifc']
+    if cmd not in allowed_arr:
+        return "'" + cmd +"'"
+    else:
+        return cmd
+
 class Shell:
     def __init__(self):
         self.alias = {}
 
     def do_alias(self, args):
-        """
-        >>> s = Shell()
-        >>> s.do_alias("ls='ls -l'")
-        >>> s.alias
-        {'ls': 'ls -l'}
-        >>> s.do_alias('')
-        alias ls='ls -l'
-        >>> s.do_alias("ls=ls -l")
-        tsh: Usage: alias [name='value']
-        >>> s.do_unalias("ls")
-        >>> s.alias
-        {}
-        >>> s.do_unalias("ls -l")
-        tsh: Usage: unalias name
-        """
         m = re.match(r"((\S+)='([^']+)')?$", args)
         if m:
             if m.group(2):
@@ -82,21 +45,22 @@ class Shell:
                     print "alias %s='%s'" % kv
         else:
             print "D-SHELL: Usage: alias [name='value']"
-            
+
     def do_unalias(self, args):
         m = re.match(r"(\S+)?$", args)
         if m:
             del self.alias[m.group(1)]
         else:
             print "D-SHELL: Usage: unalias name"
-            
+
     def do_show_commands(self, args):
-        if args=='':
+        if args == '':
             for kv in sorted(self.commands().items()):
                 print "    %-15s %s" % kv
         else:
             print "D-SHELL: Usage: commands"
-         
+
+
     def do_cd(self, args):
         """
         >>> s = Shell()
@@ -109,8 +73,10 @@ class Shell:
         m = re.match(r"(\S+)?$", args)
         if m:
             path = m.group(1) if m.group(1) else '~'
-            try: os.chdir(os.path.expanduser(path))
-            except: print "D-SHELL: cd: `%s' No such directory" % path
+            try:
+                os.chdir(os.path.expanduser(path))
+            except:
+                print "D-SHELL: cd: `%s' No such directory" % path
         else:
             print "D_SHELL: Usage: cd [path]"
 
@@ -118,28 +84,30 @@ class Shell:
         if VERBOSE: print "D-SHELL: executing file `%s':" % filename
         for line in file(filename):
             self.execute(line)
-            
+
     def execute(self, line):
         line = line.strip()
         cmd, args = lineSplit(line)
-        #here I process the command to remove any args and then place a default in for incon -DOR
+        #cmd = lock_down(cmd)
+        # here I process the command to remove any args and then place a default in for incon -DOR
         if (cmd == 'pw'):
             args = ''
-        if (cmd == 'ifc'and args==''):
-            args ='eth0'
-        if (cmd =='dt'):
-            args=' +%Y%m%d%H%M%S'
+        if (cmd == 'ifc' and args == ''):
+            args = 'eth0'
+        if (cmd == 'dt'):
+            args = ' +%Y%m%d%H%M%S'
         if not cmd:
             return
         f = self.rawExec
         if self.alias.has_key(cmd):
             alias = self.alias[cmd]
-            line = alias+' '+args
-           # print line
-            #put in here a call to process all of my commands i.e. pwd ifconfig pw and date and then return it your way. Lock down rest then
+            line = alias + ' ' + args
+            # print line
+            # put in here a call to process all of my commands i.e. pwd ifconfig pw and date and then return it your way. Lock down rest then
             if lineSplit(alias)[0] != cmd:
                 f = self.execute
         f(line)
+
     def rawExec(self, line):
         if VERBOSE: print "D-SHELL: executing: %s   " % line,
         cmd, args = lineSplit(line)
@@ -167,7 +135,7 @@ class Shell:
         >>> s.commands()['cd']
         'builtin'
         """
-        res={'exit': 'builtin'}
+        res = {'exit': 'builtin'}
         for var in vars(self.__class__):
             if var.startswith('do_'):
                 res[var[3:]] = 'builtin'
@@ -175,10 +143,12 @@ class Shell:
             res[c] = 'OS'
         for k, v in self.alias.items():
             tmp = "aliased '%s'" % v
-            if res.has_key(k): res[k] += ", "+tmp
-            else: res[k] = tmp
+            if res.has_key(k):
+                res[k] += ", " + tmp
+            else:
+                res[k] = tmp
         return res
-    
+
     def completions(self):
         res = self.commands()
         for f in glob.glob('*'):
@@ -192,19 +162,19 @@ def repl():
         has_readline = True
     except ImportError:
         has_readline = False
-    
+
     if has_readline:
         historyFile = os.path.expanduser('~/.tsh-history')
         if os.access(historyFile, os.W_OK):
             readline.read_history_file(historyFile)
             readline.set_history_length(100)
         else:
-            print "D-SHELL: Could not open `%s' for writing." % historyFile
+            ##print "D-SHELL: Could not open `%s' for writing." % historyFile
             try:
                 file(historyFile, 'w').close()
                 print "`%s' created." % historyFile
             except IOError:
-                print "D-SHELL: Warning: Creating `%s' failed." % historyFile
+               ## print "D-SHELL: Warning: Creating `%s' failed." % historyFile
                 historyFile = None
 
         readline.parse_and_bind("tab: complete")
@@ -216,17 +186,19 @@ def repl():
                 return None
 
         readline.set_completer(completer)
-    
+
     shell = Shell()
 
     rcFile = os.path.expanduser('/home/dor/Documents/tsh/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
-    
+
     while True:
         words = shell.completions()
         try:
             line = raw_input(' D-SHELL> ')
+            cmd, args = lineSplit(line)
+            line = lock_down(cmd)
             if line.strip() == 'exit':
                 break
             if has_readline and historyFile:
@@ -242,39 +214,33 @@ def usage():
     sys.exit(0)
 
 
-def test():
-    print 'D-SHELL: Performing tests ...'
-    import doctest
-    doctest.testmod()
-    sys.exit(0)
-    
 
 if __name__ == '__main__':
     import getopt
-    
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'htv',
                                    ['help', 'test', 'verbose', 'version'])
     except getopt.GetoptError:
         usage()
-        
+
     for o, v in opts:
         if o in ('-h', '--help'): usage()
         if o in ('-t', '--test'): test()
         if o in ('-v', '--verbose'): VERBOSE = True
-        if o=='--version':
+        if o == '--version':
             print 'tsh: version', __version__
             sys.exit(0)
-    
+
     readConfig()
     if VERBOSE:
         print "tsh: allowExec = %r" % allowExec
         print "tsh: allowSubShell = %r" % allowSubShell
 
-    if len(args)==0:
+    if len(args) == 0:
         # Run interactively
         repl()
-    elif len(args)==1:
+    elif len(args) == 1:
         # Interpret file
         filename = args[0]
         if os.access(filename, os.R_OK):
@@ -283,8 +249,3 @@ if __name__ == '__main__':
             print "tsh: Could not open `%s' for reading." % filename
     else:
         usage()
-
-
-# Local Variables:
-# mode:python
-# End:
