@@ -1,13 +1,37 @@
 import sys, os, os.path, glob, re
+import datetime
+import time
+from pwd import getpwnam
+import grp
+import getpass
+from os.path import expanduser
 
 # The variables can be changed by the command line options:
 VERBOSE = False
 
 # Location of main configuration file:
-CONFIG = '/home/dor/Documents/tsh/tsh.conf'
+CONFIG = '/etc/tinyshell/tsh.conf'
 
 allowExec = []
 allowSubShell = False
+
+def pwd():
+    home = expanduser("~")
+    homeid = os.stat(home)
+    gid = os.getgid()
+    group_info = grp.getgrgid(gid)
+    username = getpass.getuser()
+    print 'UserID:',getpwnam(username).pw_uid
+    print 'GroupID:',gid
+    print 'GroupName:',group_info.gr_name
+    print 'UserName :',getpwnam(username).pw_gecos
+    print 'Inode:',homeid.st_ino
+
+def date():
+    t = time.ctime()
+    print t
+    thedatetime = time.strftime('%Y%m%d%H%M%S')
+    print 'date',thedatetime
 
 def readConfig():
     if os.access(CONFIG, os.R_OK):
@@ -95,7 +119,13 @@ class Shell:
         if (cmd == 'ifc' and args == ''):
             args = 'eth0'
         if (cmd == 'dt'):
-            args = ' +%Y%m%d%H%M%S'
+            date()
+            return
+        if (cmd == 'ud'):
+            pwd()
+            cmd = ""
+            return
+
         if not cmd:
             return
         f = self.rawExec
@@ -189,7 +219,7 @@ def repl():
 
     shell = Shell()
 
-    rcFile = os.path.expanduser('/home/dor/Documents/tsh/tshrc')
+    rcFile = os.path.expanduser('/etc/tinyshell/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
 
