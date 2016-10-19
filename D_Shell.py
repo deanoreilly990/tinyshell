@@ -1,3 +1,18 @@
+#!/usr/bin/env python
+"""Usage:  tsh [options] [file]
+
+Options:
+
+    -h  --help      print this text and exit.
+
+    -t  --test      perform some tests and exit.
+
+    -v  --verbose   be verbose (mostly for debugging).
+
+        --version   print version number and exit.
+"""
+
+
 import sys, os, os.path, glob, re
 import datetime
 import time
