@@ -25,7 +25,7 @@ from os.path import expanduser
 VERBOSE = False
 
 # Location of main configuration file:
-CONFIG = '/etc/tinyshell/tsh.conf'
+CONFIG = '/bin/tinyshell/tsh.conf'
 
 allowExec = []
 allowSubShell = False
@@ -64,7 +64,7 @@ def lineSplit(line):
 
 
 def lock_down(cmd):
-    allowed_arr = ['pw', 'dt', 'ud', 'ifc']
+    allowed_arr = ['pw', 'dt', 'ud', 'ifc','exit']
     if cmd not in allowed_arr:
         return "'" + cmd +"'"
     else:
@@ -234,7 +234,7 @@ def repl():
 
     shell = Shell()
 
-    rcFile = os.path.expanduser('/etc/tinyshell/tshrc')
+    rcFile = os.path.expanduser('/bin/tinyshell/tshrc')
     if os.access(rcFile, os.R_OK):
         shell.execute_file(rcFile)
 
