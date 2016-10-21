@@ -64,11 +64,14 @@ def lineSplit(line):
 
 
 def lock_down(cmd):
-    allowed_arr = ['pw', 'dt', 'ud', 'ifc','exit']
+    allowed_arr = ['pw', 'dt', 'ud', 'ifc','exit','help']
     if cmd not in allowed_arr:
         return "'" + cmd +"'"
     else:
         return cmd
+def help ():
+    print "cat /etc/issue.net"
+
 
 class Shell:
     def __init__(self):
@@ -141,6 +144,8 @@ class Shell:
             pwd()
             cmd = ""
             return
+        if (cmd == 'help'):
+            help()
 
         if not cmd:
             return
