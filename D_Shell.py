@@ -126,13 +126,17 @@ class Shell:
 
     def execute(self, line):
         line = line.strip()
+        print line
         cmd, args = lineSplit(line)
+
         #cmd = lock_down(cmd)
         # here I process the command to remove any args and then place a default in for incon -DOR
         if (cmd == 'pw'):
             args = ''
         if (cmd == 'ifc' and args == ''):
+            print args
             args = 'eth0'
+            print args
         if (cmd == 'dt'):
             date()
             return
@@ -243,7 +247,7 @@ def repl():
         try:
             line = raw_input(' D-SHELL> ')
             cmd, args = lineSplit(line)
-            line = lock_down(cmd)
+            line = lock_down(cmd) + ' ' + args
             if line.strip() == 'exit':
                 break
             if has_readline and historyFile:

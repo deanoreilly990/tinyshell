@@ -122,6 +122,7 @@ class Shell:
     def execute(self, line):
         line = line.strip()
         cmd, args = lineSplit(line)
+        print args
         #here I process the command to remove any args and then place a default in for incon -DOR
         if (cmd == 'pw'):
             args = ''
