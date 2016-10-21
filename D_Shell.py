@@ -126,7 +126,6 @@ class Shell:
 
     def execute(self, line):
         line = line.strip()
-        print line
         cmd, args = lineSplit(line)
 
         #cmd = lock_down(cmd)
@@ -134,9 +133,7 @@ class Shell:
         if (cmd == 'pw'):
             args = ''
         if (cmd == 'ifc' and args == ''):
-            print args
             args = 'eth0'
-            print args
         if (cmd == 'dt'):
             date()
             return
