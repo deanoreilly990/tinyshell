@@ -70,7 +70,8 @@ def lock_down(cmd):
     else:
         return cmd
 def help ():
-    print "cat /etc/issue.net"
+    with open('/etc/issue.net', 'r') as fin:
+        print fin.read()
 
 
 class Shell:
